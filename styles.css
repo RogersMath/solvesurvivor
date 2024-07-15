@@ -1,0 +1,110 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(9, 40px);
+    grid-template-rows: repeat(9, 40px);
+    gap: 1px;
+    background-color: #ccc;
+    border: 1px solid #999;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    position: relative;
+}
+
+.player::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 30px;
+    background-color: blue;
+    z-index: 1;
+}
+
+.enemy::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    z-index: 1;
+}
+
+.floor { background-color: #eee; }
+.wall { background-color: black; }
+
+.up, .down, .left, .right { background-color: #a0d6b4; }
+
+#action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#shoot-buttons, #item-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#controls {
+    width: 100%;
+}
+
+#keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.key, #menu-button {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+#menu-button {
+    grid-column: span 2;
+}
+
+#stats {
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
