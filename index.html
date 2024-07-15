@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solver Survivors</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="game-board"></div>
+        <div id="action-buttons">
+            <div id="shoot-buttons">
+                <button class="action-btn shoot-up">Shoot Up</button>
+                <button class="action-btn shoot-down">Shoot Down</button>
+                <button class="action-btn shoot-left">Shoot Left</button>
+                <button class="action-btn shoot-right">Shoot Right</button>
+            </div>
+            <div id="item-buttons">
+                <button class="action-btn item1">Item 1</button>
+                <button class="action-btn item2">Item 2</button>
+            </div>
+        </div>
+        <div id="controls">
+            <div id="keypad">
+                <button class="key" data-key="7">7</button>
+                <button class="key" data-key="8">8</button>
+                <button class="key" data-key="9">9</button>
+                <button class="key" data-key="4">4</button>
+                <button class="key" data-key="5">5</button>
+                <button class="key" data-key="6">6</button>
+                <button class="key" data-key="1">1</button>
+                <button class="key" data-key="2">2</button>
+                <button class="key" data-key="3">3</button>
+                <button id="menu-button">Menu</button>
+                <button class="key" data-key="0">0</button>
+            </div>
+        </div>
+        <div id="stats">
+            <div id="score">Score: <span id="score-value">0</span></div>
+            <div id="health">Health: <span id="health-value">3</span></div>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
