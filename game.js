@@ -1,3 +1,4 @@
+// game.js
 // Game constants
 const GRID_SIZE = 9;
 const TOTAL_GRID_SIZE = 15;
