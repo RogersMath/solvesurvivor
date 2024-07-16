@@ -98,6 +98,14 @@ body {
     background-color: lavender;
 }
 
+#stats {
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 360px; /* Adjust based on your target phone size */
+}
+
 #controls {
     width: 100%;
     max-width: 360px; /* Adjust based on your target phone size */
@@ -106,6 +114,7 @@ body {
 #keypad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
     gap: 5px;
 }
 
@@ -119,13 +128,6 @@ body {
 }
 
 #menu-button {
-    grid-column: span 2;
-}
-
-#stats {
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 360px; /* Adjust based on your target phone size */
+    grid-column: 1 / span 2;
+    aspect-ratio: 2/1;
 }
