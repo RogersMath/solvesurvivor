@@ -53,6 +53,8 @@ body {
     z-index: 1;
 }
 
+.tree { background-color: green; }
+
 .enemy::after {
     content: '';
     position: absolute;
