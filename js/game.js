@@ -5,6 +5,8 @@ import Equation from './equation.js';
 import UI from './ui.js';
 import { GRID_SIZE, TOTAL_GRID_SIZE, INITIAL_HEALTH, ATTACK_RANGE, generateTrees } from './utils.js';
 
+const TURN_TIME = 10; // seconds
+
 export default class Game {
     constructor() {
         this.player = new Player();
@@ -14,15 +16,55 @@ export default class Game {
         this.health = INITIAL_HEALTH;
         this.ui = new UI(this);
         this.trees = generateTrees(TOTAL_GRID_SIZE);
+        this.timer = TURN_TIME;
+        this.timerInterval = null;
     }
+
     init() {
         this.ui.createGameBoard();
         this.spawnInitialEnemies(5);
         this.generateNewEquations();
         this.ui.updateGameBoard();
         this.ui.addKeypadListeners();
+        this.startTimer();
     }
 
+    startTimer() {
+        this.timer = TURN_TIME;
+        this.ui.updateTimer(this.timer);
+        clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+            this.timer--;
+            this.ui.updateTimer(this.timer);
+            if (this.timer <= 0) {
+                this.handleTimeOut();
+            }
+        }, 1000);
+    }
+
+    handleTimeOut() {
+        clearInterval(this.timerInterval);
+        this.moveEnemies();
+        this.checkCollisions();
+        this.trySpawnEnemy();
+        this.generateNewEquations();
+        this.ui.updateGameBoard();
+        this.startTimer();
+    }
+
+    handleInput(input) {
+        const action = this.getActionFromInput(input);
+        if (action) {
+            this.performAction(action);
+            this.moveEnemies();
+            this.checkCollisions();
+            this.trySpawnEnemy();
+            this.generateNewEquations();
+            this.ui.updateGameBoard();
+            this.startTimer();
+        }
+    }
+    
     spawnInitialEnemies(count) {
         for (let i = 0; i < count; i++) {
             this.spawnEnemy();
@@ -47,18 +89,6 @@ export default class Game {
         const shuffled = actions.sort(() => 0.5 - Math.random());
         for (let i = 0; i < 10; i++) {
             this.equations[shuffled[i]] = new Equation(i);
-        }
-    }
-
-    handleInput(input) {
-        const action = this.getActionFromInput(input);
-        if (action) {
-            this.performAction(action);
-            this.moveEnemies();
-            this.checkCollisions();
-            this.trySpawnEnemy();
-            this.generateNewEquations();
-            this.ui.updateGameBoard();
         }
     }
 
