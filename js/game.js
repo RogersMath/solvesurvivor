@@ -73,10 +73,10 @@ export default class Game {
 
     performAction(action) {
         switch (action) {
-            case 'up': this.player.move(0, -1); break;
-            case 'down': this.player.move(0, 1); break;
-            case 'left': this.player.move(-1, 0); break;
-            case 'right': this.player.move(1, 0); break;
+            case 'up': this.player.move(0, -1, this.trees); break;
+            case 'down': this.player.move(0, 1, this.trees); break;
+            case 'left': this.player.move(-1, 0, this.trees); break;
+            case 'right': this.player.move(1, 0, this.trees); break;
             case 'shootUp': this.shoot(0, -1); break;
             case 'shootDown': this.shoot(0, 1); break;
             case 'shootLeft': this.shoot(-1, 0); break;
@@ -86,7 +86,7 @@ export default class Game {
     }
 
     moveEnemies() {
-        this.enemies.forEach(enemy => enemy.move(this.player, TOTAL_GRID_SIZE));
+    this.enemies.forEach(enemy => enemy.move(this.player, TOTAL_GRID_SIZE, this.trees));
     }
 
     trySpawnEnemy() {
