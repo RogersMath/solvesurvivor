@@ -3,7 +3,7 @@ import Player from './player.js';
 import Enemy from './enemy.js';
 import Equation from './equation.js';
 import UI from './ui.js';
-import { GRID_SIZE, TOTAL_GRID_SIZE, INITIAL_HEALTH, ATTACK_RANGE } from './utils.js';
+import { GRID_SIZE, TOTAL_GRID_SIZE, INITIAL_HEALTH, ATTACK_RANGE, generateTrees } from './utils.js';
 
 export default class Game {
     constructor() {
@@ -13,8 +13,8 @@ export default class Game {
         this.score = 0;
         this.health = INITIAL_HEALTH;
         this.ui = new UI(this);
+        this.trees = generateTrees(TOTAL_GRID_SIZE);
     }
-
     init() {
         this.ui.createGameBoard();
         this.spawnInitialEnemies(5);
@@ -96,19 +96,6 @@ export default class Game {
         }
     }
 
-    shoot(dx, dy) {
-        for (let i = 1; i <= ATTACK_RANGE; i++) {
-            const targetX = this.player.x + dx * i;
-            const targetY = this.player.y + dy * i;
-            const hitEnemy = this.enemies.findIndex(enemy => enemy.x === targetX && enemy.y === targetY);
-            if (hitEnemy !== -1) {
-                this.enemies.splice(hitEnemy, 1);
-                this.score++;
-                break;
-            }
-        }
-    }
-
     checkCollisions() {
         this.enemies = this.enemies.filter(enemy => {
             if (enemy.x === this.player.x && enemy.y === this.player.y) {
@@ -124,11 +111,34 @@ export default class Game {
         }
     }
 
+    shoot(dx, dy) {
+        for (let i = 1; i <= ATTACK_RANGE; i++) {
+            const targetX = this.player.x + dx * i;
+            const targetY = this.player.y + dy * i;
+            
+            if (targetX < 0 || targetX >= TOTAL_GRID_SIZE || targetY < 0 || targetY >= TOTAL_GRID_SIZE) {
+                break;
+            }
+
+            if (this.trees[targetY][targetX]) {
+                break;
+            }
+
+            const hitEnemy = this.enemies.findIndex(enemy => enemy.x === targetX && enemy.y === targetY);
+            if (hitEnemy !== -1) {
+                this.enemies.splice(hitEnemy, 1);
+                this.score++;
+                break;
+            }
+        }
+    }
+
     reset() {
         this.player.reset();
         this.health = INITIAL_HEALTH;
         this.score = 0;
         this.enemies = [];
+        this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.spawnInitialEnemies(5);
         this.generateNewEquations();
         this.ui.updateGameBoard();
