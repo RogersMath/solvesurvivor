@@ -4,10 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solver Survivors</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            height: 100vh;
+            max-height: 800px;
+            aspect-ratio: 9/16;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #stats-and-timer {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 360px;
+            margin-bottom: 10px;
+        }
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            gap: 1px;
+            background-color: #ccc;
+            border: 1px solid #999;
+            aspect-ratio: 1/1;
+            width: 100%;
+            max-width: 360px;
+        }
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            position: relative;
+        }
+        .player::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background-color: blue;
+            z-index: 1;
+        }
+        .tree::after { 
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background-color: green;
+            z-index: 1;
+        }
+        .enemy::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background-color: red;
+            z-index: 1;
+        }
+        .floor { background-color: #eee; }
+        .wall { background-color: black; }
+        .up, .down, .left, .right { background-color: #a0d6b4; }
+        #action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            max-width: 360px;
+        }
+        #shoot-buttons, #item-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        .action-btn {
+            padding: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            flex: 1;
+        }
+        #shoot-buttons .action-btn {
+            background-color: yellow;
+        }
+        #item-buttons .action-btn {
+            background-color: lavender;
+        }
+        #controls {
+            width: 100%;
+            max-width: 360px;
+        }
+        #keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 5px;
+        }
+        .key, #menu-button {
+            width: 100%;
+            aspect-ratio: 1/1;
+            font-size: 18px;
+            border: none;
+            background-color: #ddd;
+            cursor: pointer;
+        }
+        #menu-button {
+            grid-column: 1 / span 2;
+            aspect-ratio: 2/1;
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
+        <div id="stats-and-timer">
+            <div id="stats">
+                <span id="score">Score: <span id="score-value">0</span></span>
+                <span id="health">Health: <span id="health-value">3</span></span>
+            </div>
+            <div id="timer">Time: <span id="timer-value">10</span></div>
+        </div>
         <div id="game-board"></div>
         <div id="action-buttons">
             <div id="shoot-buttons">
@@ -35,10 +167,6 @@
                 <button id="menu-button">Menu</button>
                 <button class="key" data-key="0">0</button>
             </div>
-        </div>
-        <div id="stats">
-            <div id="score">Score: <span id="score-value">0</span></div>
-            <div id="health">Health: <span id="health-value">3</span></div>
         </div>
     </div>
     <script type="module" src="js/main.js"></script>
