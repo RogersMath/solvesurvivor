@@ -4,6 +4,7 @@ import Enemy from './enemy.js';
 import Equation from './equation.js';
 import UI from './ui.js';
 import { GRID_SIZE, TOTAL_GRID_SIZE, INITIAL_HEALTH, ATTACK_RANGE, generateTrees } from './utils.js';
+import { gsap } from 'gsap';
 
 const TURN_TIME = 10; // seconds
 
@@ -27,6 +28,76 @@ export default class Game {
         this.ui.updateGameBoard();
         this.ui.addKeypadListeners();
         this.startTimer();
+    }
+
+    performAction(action) {
+        switch (action) {
+            case 'up': this.player.move(0, -1, this.trees);
+            case 'down': this.player.move(0, 1, this.trees);
+            case 'left': this.player.move(-1, 0, this.trees);
+            case 'right': this.player.move(1, 0, this.trees);
+            case 'shootUp': 
+                this.shoot(0, -1); 
+                this.animateAttack(0, -1);
+                break;
+            case 'shootDown': 
+                this.shoot(0, 1); 
+                this.animateAttack(0, 1);
+                break;
+            case 'shootLeft': 
+                this.shoot(-1, 0); 
+                this.animateAttack(-1, 0);
+                break;
+            case 'shootRight': 
+                this.shoot(1, 0); 
+                this.animateAttack(1, 0);
+                break;
+            case 'item1': case 'item2': /* Implement item usage */ break;
+        }
+    }
+
+    animateAttack(dx, dy) {
+        const projectile = document.createElement('div');
+        projectile.className = 'projectile';
+        document.getElementById('game-board').appendChild(projectile);
+
+        const cellSize = document.querySelector('.cell').offsetWidth;
+        const startX = 4 * cellSize + cellSize / 2;
+        const startY = 4 * cellSize + cellSize / 2;
+        const endX = startX + dx * cellSize * ATTACK_RANGE;
+        const endY = startY + dy * cellSize * ATTACK_RANGE;
+
+        gsap.fromTo(projectile, 
+            { x: startX, y: startY, scale: 0 },
+            { x: endX, y: endY, scale: 1, duration: 0.5, ease: "power1.out",
+              onComplete: () => {
+                  projectile.remove();
+              }
+            }
+        );
+    }
+
+    shoot(dx, dy) {
+        this.animateAttack(dx, dy);
+        for (let i = 1; i <= ATTACK_RANGE; i++) {
+            const targetX = this.player.x + dx * i;
+            const targetY = this.player.y + dy * i;
+            
+            if (targetX < 0 || targetX >= TOTAL_GRID_SIZE || targetY < 0 || targetY >= TOTAL_GRID_SIZE) {
+                break;
+            }
+
+            if (this.trees[targetY][targetX]) {
+                break;
+            }
+
+            const hitEnemy = this.enemies.findIndex(enemy => enemy.x === targetX && enemy.y === targetY);
+            if (hitEnemy !== -1) {
+                this.enemies.splice(hitEnemy, 1);
+                this.score++;
+                break;
+            }
+        }
     }
 
     startTimer() {
@@ -138,28 +209,6 @@ export default class Game {
         if (this.health <= 0) {
             alert('Game Over! Your score: ' + this.score);
             this.reset();
-        }
-    }
-
-    shoot(dx, dy) {
-        for (let i = 1; i <= ATTACK_RANGE; i++) {
-            const targetX = this.player.x + dx * i;
-            const targetY = this.player.y + dy * i;
-            
-            if (targetX < 0 || targetX >= TOTAL_GRID_SIZE || targetY < 0 || targetY >= TOTAL_GRID_SIZE) {
-                break;
-            }
-
-            if (this.trees[targetY][targetX]) {
-                break;
-            }
-
-            const hitEnemy = this.enemies.findIndex(enemy => enemy.x === targetX && enemy.y === targetY);
-            if (hitEnemy !== -1) {
-                this.enemies.splice(hitEnemy, 1);
-                this.score++;
-                break;
-            }
         }
     }
 
