@@ -79,5 +79,13 @@ export default class UI {
         document.querySelectorAll('.key').forEach(key => {
             key.addEventListener('click', () => this.game.handleInput(parseInt(key.dataset.key)));
         });
+
+        // Add keyboard listener
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            if (key >= '0' && key <= '9') {
+                this.game.handleInput(parseInt(key));
+            }
+        });
     }
 }
