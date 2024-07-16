@@ -17,16 +17,29 @@ export default class Game {
 
     init() {
         this.ui.createGameBoard();
-        this.spawnEnemies(5);
+        this.spawnInitialEnemies(5);
         this.generateNewEquations();
         this.ui.updateGameBoard();
         this.ui.addKeypadListeners();
     }
 
-    spawnEnemies(count) {
+    spawnInitialEnemies(count) {
         for (let i = 0; i < count; i++) {
-            this.enemies.push(new Enemy(TOTAL_GRID_SIZE, this.player));
+            this.spawnEnemy();
         }
+    }
+
+    spawnEnemy() {
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 4; // Spawn 4 units away from the player
+        const x = Math.round(this.player.x + Math.cos(angle) * distance);
+        const y = Math.round(this.player.y + Math.sin(angle) * distance);
+
+        // Ensure the enemy is within the game bounds
+        const boundedX = Math.max(0, Math.min(x, TOTAL_GRID_SIZE - 1));
+        const boundedY = Math.max(0, Math.min(y, TOTAL_GRID_SIZE - 1));
+
+        this.enemies.push(new Enemy(boundedX, boundedY));
     }
 
     generateNewEquations() {
@@ -43,6 +56,7 @@ export default class Game {
             this.performAction(action);
             this.moveEnemies();
             this.checkCollisions();
+            this.trySpawnEnemy();
             this.generateNewEquations();
             this.ui.updateGameBoard();
         }
@@ -73,6 +87,13 @@ export default class Game {
 
     moveEnemies() {
         this.enemies.forEach(enemy => enemy.move(this.player, TOTAL_GRID_SIZE));
+    }
+
+    trySpawnEnemy() {
+        // 50% chance to spawn a new enemy each turn
+        if (Math.random() < 0.5) {
+            this.spawnEnemy();
+        }
     }
 
     shoot(dx, dy) {
@@ -108,7 +129,7 @@ export default class Game {
         this.health = INITIAL_HEALTH;
         this.score = 0;
         this.enemies = [];
-        this.spawnEnemies(5);
+        this.spawnInitialEnemies(5);
         this.generateNewEquations();
         this.ui.updateGameBoard();
     }
