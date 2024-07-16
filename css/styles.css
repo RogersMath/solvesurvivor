@@ -107,7 +107,7 @@ body {
 }
 
 #controls {
-    width: 100%;
+    width: 90%;
     max-width: 360px; /* Adjust based on your target phone size */
 }
 
@@ -119,7 +119,7 @@ body {
 }
 
 .key, #menu-button {
-    width: 100%;
+    width: 90%;
     aspect-ratio: 1/1;
     font-size: 20px;
     border: none;
