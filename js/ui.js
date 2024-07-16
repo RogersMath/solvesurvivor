@@ -7,6 +7,7 @@ export default class UI {
         this.gameBoard = document.getElementById('game-board');
         this.scoreElement = document.getElementById('score-value');
         this.healthElement = document.getElementById('health-value');
+        this.timerElement = document.getElementById('timer-value');
     }
 
     createGameBoard() {
@@ -20,11 +21,15 @@ export default class UI {
         }
     }
 
+    updateTimer(time) {
+        this.timerElement.textContent = time;
+    }
     updateGameBoard() {
         // Clear previous state
         document.querySelectorAll('.cell').forEach(cell => {
             cell.className = 'cell floor';
             cell.textContent = '';
+            
         });
 
         // Place player
@@ -58,6 +63,7 @@ export default class UI {
         // Update score and health
         this.scoreElement.textContent = this.game.score;
         this.healthElement.textContent = this.game.health;
+        this.updateTimer(this.game.timer);
     }
 
     updateEquationCell(action, x, y) {
