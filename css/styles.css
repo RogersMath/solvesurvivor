@@ -15,7 +15,7 @@ body {
     align-items: center;
     gap: 10px;
     height: 100vh;
-    max-height: 900px; /* Adjust based on your target phone size */
+    max-height: 800px; /* Adjust based on your target phone size */
     aspect-ratio: 9/16;
     padding: 10px;
     box-sizing: border-box;
