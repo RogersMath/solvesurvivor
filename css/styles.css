@@ -53,7 +53,15 @@ body {
     z-index: 1;
 }
 
-.tree { background-color: green; }
+.tree::after { 
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background-color: green;
+    z-index: 1; }
 
 .enemy::after {
     content: '';
@@ -107,7 +115,7 @@ body {
 }
 
 #controls {
-    width: 90%;
+    width: 100%;
     max-width: 360px; /* Adjust based on your target phone size */
 }
 
@@ -119,7 +127,7 @@ body {
 }
 
 .key, #menu-button {
-    width: 90%;
+    width: 100%;
     aspect-ratio: 1/1;
     font-size: 20px;
     border: none;
