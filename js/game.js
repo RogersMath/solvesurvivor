@@ -4,7 +4,6 @@ import Enemy from './enemy.js';
 import Equation from './equation.js';
 import UI from './ui.js';
 import { GRID_SIZE, TOTAL_GRID_SIZE, INITIAL_HEALTH, ATTACK_RANGE, generateTrees } from './utils.js';
-import { gsap } from 'gsap';
 
 const TURN_TIME = 10; // seconds
 
@@ -19,15 +18,43 @@ export default class Game {
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.timer = TURN_TIME;
         this.timerInterval = null;
+        this.gsap = null; // We'll set this in init after loading GSAP
     }
 
-    init() {
+    async init() {
+        // Load GSAP dynamically
+        const gsapModule = await import('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js');
+        this.gsap = gsapModule.gsap;
+
         this.ui.createGameBoard();
         this.spawnInitialEnemies(5);
         this.generateNewEquations();
         this.ui.updateGameBoard();
         this.ui.addKeypadListeners();
         this.startTimer();
+    }
+
+    // ... (other methods remain the same)
+
+    animateAttack(dx, dy) {
+        const projectile = document.createElement('div');
+        projectile.className = 'projectile';
+        document.getElementById('game-board').appendChild(projectile);
+
+        const cellSize = document.querySelector('.cell').offsetWidth;
+        const startX = 4 * cellSize + cellSize / 2;
+        const startY = 4 * cellSize + cellSize / 2;
+        const endX = startX + dx * cellSize * ATTACK_RANGE;
+        const endY = startY + dy * cellSize * ATTACK_RANGE;
+
+        this.gsap.fromTo(projectile, 
+            { x: startX, y: startY, scale: 0 },
+            { x: endX, y: endY, scale: 1, duration: 0.5, ease: "power1.out",
+              onComplete: () => {
+                  projectile.remove();
+              }
+            }
+        );
     }
 
     performAction(action) {
@@ -54,27 +81,6 @@ export default class Game {
                 break;
             case 'item1': case 'item2': /* Implement item usage */ break;
         }
-    }
-
-    animateAttack(dx, dy) {
-        const projectile = document.createElement('div');
-        projectile.className = 'projectile';
-        document.getElementById('game-board').appendChild(projectile);
-
-        const cellSize = document.querySelector('.cell').offsetWidth;
-        const startX = 4 * cellSize + cellSize / 2;
-        const startY = 4 * cellSize + cellSize / 2;
-        const endX = startX + dx * cellSize * ATTACK_RANGE;
-        const endY = startY + dy * cellSize * ATTACK_RANGE;
-
-        gsap.fromTo(projectile, 
-            { x: startX, y: startY, scale: 0 },
-            { x: endX, y: endY, scale: 1, duration: 0.5, ease: "power1.out",
-              onComplete: () => {
-                  projectile.remove();
-              }
-            }
-        );
     }
 
     shoot(dx, dy) {
