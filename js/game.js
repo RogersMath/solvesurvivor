@@ -18,7 +18,7 @@ export default class Game {
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.timer = TURN_TIME;
         this.timerInterval = null;
-        this.shots = []; // Array to store active shots
+        this.shots = [];
     }
 
     init() {
@@ -89,15 +89,15 @@ export default class Game {
 
     generateNewEquations() {
         const actions = ['up', 'down', 'left', 'right', 'shootUp', 'shootDown', 'shootLeft', 'shootRight', 'item1', 'item2'];
-        const shuffled = actions.sort(() => 0.5 - Math.random());
-        for (let i = 0; i < 10; i++) {
-            this.equations[shuffled[i]] = new Equation(i);
+        for (let action of actions) {
+            this.equations[action] = new Equation();
         }
     }
 
     getActionFromInput(input) {
-        for (const [action, equation] of Object.entries(this.equations)) {
-            if (equation.solve() === input) {
+        const actions = ['up', 'down', 'left', 'right', 'shootUp', 'shootDown', 'shootLeft', 'shootRight', 'item1', 'item2'];
+        for (let action of actions) {
+            if (this.equations[action].solve() === input) {
                 return action;
             }
         }
@@ -108,24 +108,32 @@ export default class Game {
         switch (action) {
             case 'up': 
                 this.player.move(0, -1, this.trees);
-                this.animateAttack(0, -1);
                 break;
             case 'down': 
                 this.player.move(0, 1, this.trees);
-                this.animateAttack(0, 1);
                 break;
             case 'left': 
                 this.player.move(-1, 0, this.trees);
-                this.animateAttack(-1, 0);
                 break;
             case 'right': 
                 this.player.move(1, 0, this.trees);
+                break;
+            case 'shootUp': 
+                this.shoot(0, -1);
+                this.animateAttack(0, -1);
+                break;
+            case 'shootDown': 
+                this.shoot(0, 1);
+                this.animateAttack(0, 1);
+                break;
+            case 'shootLeft': 
+                this.shoot(-1, 0);
+                this.animateAttack(-1, 0);
+                break;
+            case 'shootRight': 
+                this.shoot(1, 0);
                 this.animateAttack(1, 0);
                 break;
-            case 'shootUp': this.shoot(0, -1); break;
-            case 'shootDown': this.shoot(0, 1); break;
-            case 'shootLeft': this.shoot(-1, 0); break;
-            case 'shootRight': this.shoot(1, 0); break;
             case 'item1': case 'item2': /* Implement item usage */ break;
         }
     }
@@ -178,7 +186,6 @@ export default class Game {
     }
 
     shoot(dx, dy) {
-        this.animateAttack(dx, dy);
         this.shots.push({
             x: this.player.x,
             y: this.player.y,
@@ -223,7 +230,7 @@ export default class Game {
         this.health = INITIAL_HEALTH;
         this.score = 0;
         this.enemies = [];
-        this.shots = []; // Clear shots on reset
+        this.shots = [];
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.spawnInitialEnemies(5);
         this.generateNewEquations();
