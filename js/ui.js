@@ -107,15 +107,25 @@ export default class UI {
 
     addKeypadListeners() {
         document.querySelectorAll('.key').forEach(key => {
-            key.addEventListener('click', () => this.game.handleInput(parseInt(key.dataset.key)));
+            key.addEventListener('click', () => this.handleInput(parseInt(key.dataset.key)));
         });
 
         // Add keyboard listener
         document.addEventListener('keydown', (event) => {
             const key = event.key;
             if (key >= '0' && key <= '9') {
-                this.game.handleInput(parseInt(key));
+                this.handleInput(parseInt(key));
             }
         });
+    }
+
+    handleInput(input) {
+        const action = this.game.getActionFromInput(input);
+        if (action) {
+            this.game.performAction(action);
+            this.game.updateGameState();
+            this.updateGameBoard();
+            this.game.startTimer();
+        }
     }
 }
