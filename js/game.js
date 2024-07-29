@@ -14,11 +14,11 @@ export default class Game {
         this.equations = {};
         this.score = 0;
         this.health = INITIAL_HEALTH;
-        this.ui = new UI(this);
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.timer = TURN_TIME;
         this.timerInterval = null;
         this.shots = [];
+        this.ui = new UI(this);
     }
 
     init() {
@@ -45,29 +45,19 @@ export default class Game {
 
     handleTimeOut() {
         clearInterval(this.timerInterval);
+        this.updateGameState();
+        this.ui.updateGameBoard();
+        this.startTimer();
+    }
+
+    updateGameState() {
         this.moveEnemies();
         this.updateShots();
         this.checkCollisions();
         this.trySpawnEnemy();
         this.generateNewEquations();
-        this.ui.updateGameBoard();
-        this.startTimer();
     }
 
-    handleInput(input) {
-        const action = this.getActionFromInput(input);
-        if (action) {
-            this.performAction(action);
-            this.moveEnemies();
-            this.updateShots();
-            this.checkCollisions();
-            this.trySpawnEnemy();
-            this.generateNewEquations();
-            this.ui.updateGameBoard();
-            this.startTimer();
-        }
-    }
-    
     spawnInitialEnemies(count) {
         for (let i = 0; i < count; i++) {
             this.spawnEnemy();
@@ -120,19 +110,19 @@ export default class Game {
                 break;
             case 'shootUp': 
                 this.shoot(0, -1);
-                this.animateAttack(0, -1);
+                this.ui.animateAttack(0, -1);
                 break;
             case 'shootDown': 
                 this.shoot(0, 1);
-                this.animateAttack(0, 1);
+                this.ui.animateAttack(0, 1);
                 break;
             case 'shootLeft': 
                 this.shoot(-1, 0);
-                this.animateAttack(-1, 0);
+                this.ui.animateAttack(-1, 0);
                 break;
             case 'shootRight': 
                 this.shoot(1, 0);
-                this.animateAttack(1, 0);
+                this.ui.animateAttack(1, 0);
                 break;
             case 'item1': case 'item2': /* Implement item usage */ break;
         }
@@ -164,33 +154,10 @@ export default class Game {
         }
     }
 
-    animateAttack(dx, dy) {
-        const projectile = document.createElement('div');
-        projectile.className = 'projectile';
-        document.getElementById('game-board').appendChild(projectile);
-
-        const cellSize = document.querySelector('.cell').offsetWidth;
-        const startX = 4 * cellSize + cellSize / 2;
-        const startY = 4 * cellSize + cellSize / 2;
-        const endX = startX + dx * cellSize * ATTACK_RANGE;
-        const endY = startY + dy * cellSize * ATTACK_RANGE;
-
-        gsap.fromTo(projectile, 
-            { x: startX, y: startY, scale: 0 },
-            { x: endX, y: endY, scale: 1, duration: 0.5, ease: "power1.out",
-              onComplete: () => {
-                  projectile.remove();
-              }
-            }
-        );
-    }
-
     shoot(dx, dy) {
         this.shots.push({
             x: this.player.x,
             y: this.player.y,
-            playerX: this.player.x,
-            playerY: this.player.y,
             dx: dx,
             dy: dy,
             range: ATTACK_RANGE
