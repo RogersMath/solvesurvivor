@@ -144,20 +144,13 @@ export default class Game {
         }
     }
 
-    shoot(dx, dy) {
-        this.shots.push({
-            x: this.player.x,
-            y: this.player.y,
-            dx: dx,
-            dy: dy,
-            range: ATTACK_RANGE
-        });
-    }
-
     updateShots() {
         this.shots = this.shots.filter(shot => {
-            shot.x += shot.dx;
-            shot.y += shot.dy;
+            // Update shot position relative to player movement
+            shot.x += shot.dx - (this.player.x - shot.playerX);
+            shot.y += shot.dy - (this.player.y - shot.playerY);
+            shot.playerX = this.player.x;
+            shot.playerY = this.player.y;
             shot.range--;
 
             // Check if the shot is out of bounds
@@ -179,6 +172,18 @@ export default class Game {
             }
 
             return shot.range > 0;
+        });
+    }
+
+    shoot(dx, dy) {
+        this.shots.push({
+            x: this.player.x,
+            y: this.player.y,
+            playerX: this.player.x,
+            playerY: this.player.y,
+            dx: dx,
+            dy: dy,
+            range: ATTACK_RANGE
         });
     }
 
