@@ -129,6 +129,14 @@
             grid-column: 1 / span 2;
             aspect-ratio: 2/1;
         }
+        .projectile {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: yellow;
+            border-radius: 50%;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -169,6 +177,11 @@
             </div>
         </div>
     </div>
-    <script type="module" src="js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <script type="module">
+        import Game from './js/game.js';
+        const game = new Game();
+        game.init();
+    </script>
 </body>
 </html>

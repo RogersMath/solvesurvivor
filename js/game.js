@@ -106,10 +106,22 @@ export default class Game {
 
     performAction(action) {
         switch (action) {
-            case 'up': this.player.move(0, -1, this.trees); break;
-            case 'down': this.player.move(0, 1, this.trees); break;
-            case 'left': this.player.move(-1, 0, this.trees); break;
-            case 'right': this.player.move(1, 0, this.trees); break;
+            case 'up': 
+                this.player.move(0, -1, this.trees);
+                this.animateAttack(0, -1);
+                break;
+            case 'down': 
+                this.player.move(0, 1, this.trees);
+                this.animateAttack(0, 1);
+                break;
+            case 'left': 
+                this.player.move(-1, 0, this.trees);
+                this.animateAttack(-1, 0);
+                break;
+            case 'right': 
+                this.player.move(1, 0, this.trees);
+                this.animateAttack(1, 0);
+                break;
             case 'shootUp': this.shoot(0, -1); break;
             case 'shootDown': this.shoot(0, 1); break;
             case 'shootLeft': this.shoot(-1, 0); break;
@@ -144,6 +156,35 @@ export default class Game {
         }
     }
 
+    animateAttack(dx, dy) {
+        const projectile = document.createElement('div');
+        projectile.className = 'projectile';
+        document.getElementById('game-board').appendChild(projectile);
+
+        const cellSize = document.querySelector('.cell').offsetWidth;
+        const startX = 4 * cellSize + cellSize / 2;
+        const startY = 4 * cellSize + cellSize / 2;
+        const endX = startX + dx * cellSize * ATTACK_RANGE;
+        const endY = startY + dy * cellSize * ATTACK_RANGE;
+
+        gsap.fromTo(projectile, 
+            { x: startX, y: startY, scale: 0 },
+            { x: endX, y: endY, scale: 1, duration: 0.5, ease: "power1.out",
+              onComplete: () => {
+                  projectile.remove();
+              }
+            }
+        );
+    }
+
+    shoot(dx, dy) {
+        this.animateAttack(dx, dy);
+        for (let i = 1; i <= ATTACK_RANGE; i++) {
+            const targetX = this.player.x + dx * i;
+            const targetY = this.player.y + dy * i;
+            
+            if (targetX < 0 || targetX >= TOTAL_GRID_SIZE || targetY < 0 || targetY >= TOTAL_GRID_SIZE) {
+                break;
     updateShots() {
         this.shots = this.shots.filter(shot => {
             // Update shot position relative to player movement
