@@ -7,13 +7,19 @@ export default class Player {
         this.y = PLAYER_START_POSITION.y;
     }
 
-    move(dx, dy) {
+    move(dx, dy, trees) {
         const newX = this.x + dx;
         const newY = this.y + dy;
-        if (newX >= 0 && newX < TOTAL_GRID_SIZE && newY >= 0 && newY < TOTAL_GRID_SIZE) {
+        if (this.isValidMove(newX, newY, trees)) {
             this.x = newX;
             this.y = newY;
         }
+    }
+
+    isValidMove(x, y, trees) {
+        return x >= 0 && x < TOTAL_GRID_SIZE && 
+               y >= 0 && y < TOTAL_GRID_SIZE && 
+               !trees[y][x];
     }
 
     reset() {
