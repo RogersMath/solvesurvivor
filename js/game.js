@@ -18,6 +18,7 @@ export default class Game {
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.timer = TURN_TIME;
         this.timerInterval = null;
+        this.shots = []; // New array to store active shots
     }
 
     init() {
@@ -45,6 +46,7 @@ export default class Game {
     handleTimeOut() {
         clearInterval(this.timerInterval);
         this.moveEnemies();
+        this.updateShots(); // New: update shots every turn
         this.checkCollisions();
         this.trySpawnEnemy();
         this.generateNewEquations();
@@ -57,6 +59,7 @@ export default class Game {
         if (action) {
             this.performAction(action);
             this.moveEnemies();
+            this.updateShots(); // New: update shots after every action
             this.checkCollisions();
             this.trySpawnEnemy();
             this.generateNewEquations();
@@ -182,19 +185,47 @@ export default class Game {
             
             if (targetX < 0 || targetX >= TOTAL_GRID_SIZE || targetY < 0 || targetY >= TOTAL_GRID_SIZE) {
                 break;
+    updateShots() {
+        this.shots = this.shots.filter(shot => {
+            // Update shot position relative to player movement
+            shot.x += shot.dx - (this.player.x - shot.playerX);
+            shot.y += shot.dy - (this.player.y - shot.playerY);
+            shot.playerX = this.player.x;
+            shot.playerY = this.player.y;
+            shot.range--;
+
+            // Check if the shot is out of bounds
+            if (shot.x < 0 || shot.x >= TOTAL_GRID_SIZE || shot.y < 0 || shot.y >= TOTAL_GRID_SIZE) {
+                return false;
             }
 
-            if (this.trees[targetY][targetX]) {
-                break;
+            // Check if the shot hit a tree
+            if (this.trees[shot.y][shot.x]) {
+                return false;
             }
 
-            const hitEnemy = this.enemies.findIndex(enemy => enemy.x === targetX && enemy.y === targetY);
-            if (hitEnemy !== -1) {
-                this.enemies.splice(hitEnemy, 1);
+            // Check if the shot hit an enemy
+            const hitEnemyIndex = this.enemies.findIndex(enemy => enemy.x === shot.x && enemy.y === shot.y);
+            if (hitEnemyIndex !== -1) {
+                this.enemies.splice(hitEnemyIndex, 1);
                 this.score++;
-                break;
+                return false;
             }
-        }
+
+            return shot.range > 0;
+        });
+    }
+
+    shoot(dx, dy) {
+        this.shots.push({
+            x: this.player.x,
+            y: this.player.y,
+            playerX: this.player.x,
+            playerY: this.player.y,
+            dx: dx,
+            dy: dy,
+            range: ATTACK_RANGE
+        });
     }
 
     reset() {
@@ -202,6 +233,7 @@ export default class Game {
         this.health = INITIAL_HEALTH;
         this.score = 0;
         this.enemies = [];
+        this.shots = []; // Clear shots on reset
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.spawnInitialEnemies(5);
         this.generateNewEquations();
