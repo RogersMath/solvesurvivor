@@ -24,12 +24,12 @@ export default class UI {
     updateTimer(time) {
         this.timerElement.textContent = time;
     }
+
     updateGameBoard() {
         // Clear previous state
         document.querySelectorAll('.cell').forEach(cell => {
             cell.className = 'cell floor';
             cell.textContent = '';
-            
         });
 
         // Place player
@@ -45,6 +45,30 @@ export default class UI {
                 enemyCell.classList.add('enemy');
             }
         });
+
+        // Place shots
+        this.game.shots.forEach(shot => {
+            const shotCell = document.getElementById(`cell-${shot.x - (this.game.player.x - 4)}-${shot.y - (this.game.player.y - 4)}`);
+            if (shotCell) {
+                shotCell.classList.add('shot');
+            }
+        });
+
+        // Place trees
+        for (let y = 0; y < GRID_SIZE; y++) {
+            for (let x = 0; x < GRID_SIZE; x++) {
+                const worldX = this.game.player.x - 4 + x;
+                const worldY = this.game.player.y - 4 + y;
+                if (worldX >= 0 && worldX < this.game.trees.length && worldY >= 0 && worldY < this.game.trees.length) {
+                    if (this.game.trees[worldY][worldX]) {
+                        const cell = document.getElementById(`cell-${x}-${y}`);
+                        if (cell) {
+                            cell.classList.add('tree');
+                        }
+                    }
+                }
+            }
+        }
 
         // Update equations on cells
         this.updateEquationCell('up', 3, 4);
