@@ -18,7 +18,7 @@ export default class Game {
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.timer = TURN_TIME;
         this.timerInterval = null;
-        this.shots = []; // New array to store active shots
+        this.shots = []; // Array to store active shots
     }
 
     init() {
@@ -46,7 +46,7 @@ export default class Game {
     handleTimeOut() {
         clearInterval(this.timerInterval);
         this.moveEnemies();
-        this.updateShots(); // New: update shots every turn
+        this.updateShots();
         this.checkCollisions();
         this.trySpawnEnemy();
         this.generateNewEquations();
@@ -59,7 +59,7 @@ export default class Game {
         if (action) {
             this.performAction(action);
             this.moveEnemies();
-            this.updateShots(); // New: update shots after every action
+            this.updateShots();
             this.checkCollisions();
             this.trySpawnEnemy();
             this.generateNewEquations();
@@ -179,19 +179,21 @@ export default class Game {
 
     shoot(dx, dy) {
         this.animateAttack(dx, dy);
-        for (let i = 1; i <= ATTACK_RANGE; i++) {
-            const targetX = this.player.x + dx * i;
-            const targetY = this.player.y + dy * i;
-            
-            if (targetX < 0 || targetX >= TOTAL_GRID_SIZE || targetY < 0 || targetY >= TOTAL_GRID_SIZE) {
-                break;
+        this.shots.push({
+            x: this.player.x,
+            y: this.player.y,
+            playerX: this.player.x,
+            playerY: this.player.y,
+            dx: dx,
+            dy: dy,
+            range: ATTACK_RANGE
+        });
+    }
+
     updateShots() {
         this.shots = this.shots.filter(shot => {
-            // Update shot position relative to player movement
-            shot.x += shot.dx - (this.player.x - shot.playerX);
-            shot.y += shot.dy - (this.player.y - shot.playerY);
-            shot.playerX = this.player.x;
-            shot.playerY = this.player.y;
+            shot.x += shot.dx;
+            shot.y += shot.dy;
             shot.range--;
 
             // Check if the shot is out of bounds
@@ -213,18 +215,6 @@ export default class Game {
             }
 
             return shot.range > 0;
-        });
-    }
-
-    shoot(dx, dy) {
-        this.shots.push({
-            x: this.player.x,
-            y: this.player.y,
-            playerX: this.player.x,
-            playerY: this.player.y,
-            dx: dx,
-            dy: dy,
-            range: ATTACK_RANGE
         });
     }
 
