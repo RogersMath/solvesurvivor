@@ -33,30 +33,38 @@ export default class UI {
         });
 
         // Place player
-        const playerCell = document.getElementById(`cell-${4}-${4}`);
+        const playerCell = document.getElementById(`cell-4-4`);
         if (playerCell) {
             playerCell.classList.add('player');
         }
 
         // Place enemies
         this.game.enemies.forEach(enemy => {
-            const enemyCell = document.getElementById(`cell-${enemy.x - (this.game.player.x - 4)}-${enemy.y - (this.game.player.y - 4)}`);
-            if (enemyCell) {
-                enemyCell.classList.add('enemy');
+            const relativeX = 4 + (enemy.x - this.game.player.x);
+            const relativeY = 4 + (enemy.y - this.game.player.y);
+            if (relativeX >= 0 && relativeX < 9 && relativeY >= 0 && relativeY < 9) {
+                const enemyCell = document.getElementById(`cell-${relativeX}-${relativeY}`);
+                if (enemyCell) {
+                    enemyCell.classList.add('enemy');
+                }
             }
         });
 
         // Place shots
         this.game.shots.forEach(shot => {
-            const shotCell = document.getElementById(`cell-${shot.x - (this.game.player.x - 4)}-${shot.y - (this.game.player.y - 4)}`);
-            if (shotCell) {
-                shotCell.classList.add('shot');
+            const relativeX = 4 + (shot.x - this.game.player.x);
+            const relativeY = 4 + (shot.y - this.game.player.y);
+            if (relativeX >= 0 && relativeX < 9 && relativeY >= 0 && relativeY < 9) {
+                const shotCell = document.getElementById(`cell-${relativeX}-${relativeY}`);
+                if (shotCell) {
+                    shotCell.classList.add('shot');
+                }
             }
         });
 
         // Place trees
-        for (let y = 0; y < GRID_SIZE; y++) {
-            for (let x = 0; x < GRID_SIZE; x++) {
+        for (let y = 0; y < 9; y++) {
+            for (let x = 0; x < 9; x++) {
                 const worldX = this.game.player.x - 4 + x;
                 const worldY = this.game.player.y - 4 + y;
                 if (worldX >= 0 && worldX < this.game.trees.length && worldY >= 0 && worldY < this.game.trees.length) {
