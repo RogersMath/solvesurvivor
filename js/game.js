@@ -14,11 +14,11 @@ export default class Game {
         this.equations = {};
         this.score = 0;
         this.health = INITIAL_HEALTH;
+        this.ui = new UI(this);
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.timer = TURN_TIME;
         this.timerInterval = null;
-        this.shots = [];
-        this.ui = new UI(this);
+        this.shots = []; // New array to store active shots
     }
 
     init() {
@@ -31,9 +31,9 @@ export default class Game {
     }
 
     startTimer() {
-        clearInterval(this.timerInterval);
         this.timer = TURN_TIME;
         this.ui.updateTimer(this.timer);
+        clearInterval(this.timerInterval);
         this.timerInterval = setInterval(() => {
             this.timer--;
             this.ui.updateTimer(this.timer);
@@ -45,19 +45,29 @@ export default class Game {
 
     handleTimeOut() {
         clearInterval(this.timerInterval);
-        this.updateGameState();
+        this.moveEnemies();
+        this.updateShots(); // New: update shots every turn
+        this.checkCollisions();
+        this.trySpawnEnemy();
+        this.generateNewEquations();
         this.ui.updateGameBoard();
         this.startTimer();
     }
 
-    updateGameState() {
-        this.moveEnemies();
-        this.updateShots();
-        this.checkCollisions();
-        this.trySpawnEnemy();
-        this.generateNewEquations();
+    handleInput(input) {
+        const action = this.getActionFromInput(input);
+        if (action) {
+            this.performAction(action);
+            this.moveEnemies();
+            this.updateShots(); // New: update shots after every action
+            this.checkCollisions();
+            this.trySpawnEnemy();
+            this.generateNewEquations();
+            this.ui.updateGameBoard();
+            this.startTimer();
+        }
     }
-
+    
     spawnInitialEnemies(count) {
         for (let i = 0; i < count; i++) {
             this.spawnEnemy();
@@ -79,15 +89,15 @@ export default class Game {
 
     generateNewEquations() {
         const actions = ['up', 'down', 'left', 'right', 'shootUp', 'shootDown', 'shootLeft', 'shootRight', 'item1', 'item2'];
-        for (let action of actions) {
-            this.equations[action] = new Equation();
+        const shuffled = actions.sort(() => 0.5 - Math.random());
+        for (let i = 0; i < 10; i++) {
+            this.equations[shuffled[i]] = new Equation(i);
         }
     }
 
     getActionFromInput(input) {
-        const actions = ['up', 'down', 'left', 'right', 'shootUp', 'shootDown', 'shootLeft', 'shootRight', 'item1', 'item2'];
-        for (let action of actions) {
-            if (this.equations[action].solve() === input) {
+        for (const [action, equation] of Object.entries(this.equations)) {
+            if (equation.solve() === input) {
                 return action;
             }
         }
@@ -96,38 +106,16 @@ export default class Game {
 
     performAction(action) {
         switch (action) {
-            case 'up': 
-                this.player.move(0, -1, this.trees);
-                break;
-            case 'down': 
-                this.player.move(0, 1, this.trees);
-                break;
-            case 'left': 
-                this.player.move(-1, 0, this.trees);
-                break;
-            case 'right': 
-                this.player.move(1, 0, this.trees);
-                break;
-            case 'shootUp': 
-                this.shoot(0, -1);
-                this.ui.animateAttack(0, -1);
-                break;
-            case 'shootDown': 
-                this.shoot(0, 1);
-                this.ui.animateAttack(0, 1);
-                break;
-            case 'shootLeft': 
-                this.shoot(-1, 0);
-                this.ui.animateAttack(-1, 0);
-                break;
-            case 'shootRight': 
-                this.shoot(1, 0);
-                this.ui.animateAttack(1, 0);
-                break;
+            case 'up': this.player.move(0, -1, this.trees); break;
+            case 'down': this.player.move(0, 1, this.trees); break;
+            case 'left': this.player.move(-1, 0, this.trees); break;
+            case 'right': this.player.move(1, 0, this.trees); break;
+            case 'shootUp': this.shoot(0, -1); break;
+            case 'shootDown': this.shoot(0, 1); break;
+            case 'shootLeft': this.shoot(-1, 0); break;
+            case 'shootRight': this.shoot(1, 0); break;
             case 'item1': case 'item2': /* Implement item usage */ break;
         }
-        this.updateGameState();
-        this.ui.updateGameBoard();
     }
 
     moveEnemies() {
@@ -156,20 +144,13 @@ export default class Game {
         }
     }
 
-    shoot(dx, dy) {
-        this.shots.push({
-            x: this.player.x,
-            y: this.player.y,
-            dx: dx,
-            dy: dy,
-            range: ATTACK_RANGE
-        });
-    }
-
     updateShots() {
         this.shots = this.shots.filter(shot => {
-            shot.x += shot.dx;
-            shot.y += shot.dy;
+            // Update shot position relative to player movement
+            shot.x += shot.dx - (this.player.x - shot.playerX);
+            shot.y += shot.dy - (this.player.y - shot.playerY);
+            shot.playerX = this.player.x;
+            shot.playerY = this.player.y;
             shot.range--;
 
             // Check if the shot is out of bounds
@@ -194,12 +175,24 @@ export default class Game {
         });
     }
 
+    shoot(dx, dy) {
+        this.shots.push({
+            x: this.player.x,
+            y: this.player.y,
+            playerX: this.player.x,
+            playerY: this.player.y,
+            dx: dx,
+            dy: dy,
+            range: ATTACK_RANGE
+        });
+    }
+
     reset() {
         this.player.reset();
         this.health = INITIAL_HEALTH;
         this.score = 0;
         this.enemies = [];
-        this.shots = [];
+        this.shots = []; // Clear shots on reset
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.spawnInitialEnemies(5);
         this.generateNewEquations();
