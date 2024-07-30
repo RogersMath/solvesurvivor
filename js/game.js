@@ -109,10 +109,10 @@ export default class Game {
             case 'down': this.player.move(1, 0, this.trees); break;
             case 'left': this.player.move(0, -1, this.trees); break;
             case 'right': this.player.move(0, 1, this.trees); break;
-            case 'shootUp': this.shoot(-1, 0); break;
-            case 'shootDown': this.shoot(1, 0); break;
-            case 'shootLeft': this.shoot(0, -1); break;
-            case 'shootRight': this.shoot(0, 1); break;
+            case 'shootUp': this.shoot(0, -1); break;
+            case 'shootDown': this.shoot(0, 1); break;
+            case 'shootLeft': this.shoot(-1, 0); break;
+            case 'shootRight': this.shoot(1, 0); break;
             case 'item1': case 'item2': /* Implement item usage */ break;
         }
     }
