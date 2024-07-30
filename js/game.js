@@ -177,8 +177,8 @@ export default class Game {
 
     shoot(dx, dy) {
         this.shots.push({
-            x: this.player.x,
-            y: this.player.y,
+            x: this.player.x + dx,
+            y: this.player.y + dy,
             playerX: this.player.x,
             playerY: this.player.y,
             dx: dx,
