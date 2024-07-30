@@ -18,7 +18,7 @@ export default class Game {
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.timer = TURN_TIME;
         this.timerInterval = null;
-        this.shots = []; // New array to store active shots
+        this.shots = [];
     }
 
     init() {
@@ -46,7 +46,7 @@ export default class Game {
     handleTimeOut() {
         clearInterval(this.timerInterval);
         this.moveEnemies();
-        this.updateShots(); // New: update shots every turn
+        this.updateShots();
         this.checkCollisions();
         this.trySpawnEnemy();
         this.generateNewEquations();
@@ -59,7 +59,7 @@ export default class Game {
         if (action) {
             this.performAction(action);
             this.moveEnemies();
-            this.updateShots(); // New: update shots after every action
+            this.updateShots();
             this.checkCollisions();
             this.trySpawnEnemy();
             this.generateNewEquations();
@@ -76,11 +76,10 @@ export default class Game {
 
     spawnEnemy() {
         const angle = Math.random() * 2 * Math.PI;
-        const distance = 4; // Spawn 4 units away from the player
+        const distance = 4;
         const x = Math.round(this.player.x + Math.cos(angle) * distance);
         const y = Math.round(this.player.y + Math.sin(angle) * distance);
 
-        // Ensure the enemy is within the game bounds
         const boundedX = Math.max(0, Math.min(x, TOTAL_GRID_SIZE - 1));
         const boundedY = Math.max(0, Math.min(y, TOTAL_GRID_SIZE - 1));
 
@@ -106,14 +105,14 @@ export default class Game {
 
     performAction(action) {
         switch (action) {
-            case 'up': this.player.move(0, -1, this.trees); break;
-            case 'down': this.player.move(0, 1, this.trees); break;
-            case 'left': this.player.move(-1, 0, this.trees); break;
-            case 'right': this.player.move(1, 0, this.trees); break;
-            case 'shootUp': this.shoot(0, -1); break;
-            case 'shootDown': this.shoot(0, 1); break;
-            case 'shootLeft': this.shoot(-1, 0); break;
-            case 'shootRight': this.shoot(1, 0); break;
+            case 'up': this.player.move(-1, 0, this.trees); break;
+            case 'down': this.player.move(1, 0, this.trees); break;
+            case 'left': this.player.move(0, -1, this.trees); break;
+            case 'right': this.player.move(0, 1, this.trees); break;
+            case 'shootUp': this.shoot(-1, 0); break;
+            case 'shootDown': this.shoot(1, 0); break;
+            case 'shootLeft': this.shoot(0, -1); break;
+            case 'shootRight': this.shoot(0, 1); break;
             case 'item1': case 'item2': /* Implement item usage */ break;
         }
     }
@@ -123,7 +122,6 @@ export default class Game {
     }
 
     trySpawnEnemy() {
-        // 50% chance to spawn a new enemy each turn
         if (Math.random() < 0.5) {
             this.spawnEnemy();
         }
@@ -146,24 +144,20 @@ export default class Game {
 
     updateShots() {
         this.shots = this.shots.filter(shot => {
-            // Update shot position relative to player movement
             shot.x += shot.dx - (this.player.x - shot.playerX);
             shot.y += shot.dy - (this.player.y - shot.playerY);
             shot.playerX = this.player.x;
             shot.playerY = this.player.y;
             shot.range--;
 
-            // Check if the shot is out of bounds
             if (shot.x < 0 || shot.x >= TOTAL_GRID_SIZE || shot.y < 0 || shot.y >= TOTAL_GRID_SIZE) {
                 return false;
             }
 
-            // Check if the shot hit a tree
             if (this.trees[shot.y][shot.x]) {
                 return false;
             }
 
-            // Check if the shot hit an enemy
             const hitEnemyIndex = this.enemies.findIndex(enemy => enemy.x === shot.x && enemy.y === shot.y);
             if (hitEnemyIndex !== -1) {
                 this.enemies.splice(hitEnemyIndex, 1);
@@ -192,7 +186,7 @@ export default class Game {
         this.health = INITIAL_HEALTH;
         this.score = 0;
         this.enemies = [];
-        this.shots = []; // Clear shots on reset
+        this.shots = [];
         this.trees = generateTrees(TOTAL_GRID_SIZE);
         this.spawnInitialEnemies(5);
         this.generateNewEquations();
