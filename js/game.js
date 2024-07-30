@@ -31,9 +31,9 @@ export default class Game {
     }
 
     startTimer() {
+        clearInterval(this.timerInterval);
         this.timer = TURN_TIME;
         this.ui.updateTimer(this.timer);
-        clearInterval(this.timerInterval);
         this.timerInterval = setInterval(() => {
             this.timer--;
             this.ui.updateTimer(this.timer);
@@ -126,6 +126,8 @@ export default class Game {
                 break;
             case 'item1': case 'item2': /* Implement item usage */ break;
         }
+        this.updateGameState();
+        this.ui.updateGameBoard();
     }
 
     moveEnemies() {
