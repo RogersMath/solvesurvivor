@@ -1,5 +1,5 @@
 // ui.js
-import { GRID_SIZE } from './utils.js';
+import { GRID_SIZE, ATTACK_RANGE } from './utils.js';
 
 export default class UI {
     constructor(game) {
@@ -123,9 +123,29 @@ export default class UI {
         const action = this.game.getActionFromInput(input);
         if (action) {
             this.game.performAction(action);
-            this.game.updateGameState();
-            this.updateGameBoard();
+            // Note: updateGameState and updateGameBoard are now called in performAction
             this.game.startTimer();
         }
+    }
+
+    animateAttack(dx, dy) {
+        const projectile = document.createElement('div');
+        projectile.className = 'projectile';
+        this.gameBoard.appendChild(projectile);
+
+        const cellSize = document.querySelector('.cell').offsetWidth;
+        const startX = 4 * cellSize + cellSize / 2;
+        const startY = 4 * cellSize + cellSize / 2;
+        const endX = startX + dx * cellSize * ATTACK_RANGE;
+        const endY = startY + dy * cellSize * ATTACK_RANGE;
+
+        gsap.fromTo(projectile, 
+            { x: startX, y: startY, scale: 0 },
+            { x: endX, y: endY, scale: 1, duration: 0.5, ease: "power1.out",
+              onComplete: () => {
+                  projectile.remove();
+              }
+            }
+        );
     }
 }
